@@ -59,8 +59,8 @@ module Levenshtein
 	private_class_method :recursion
 
   #---------------------------------------------------------------------------------------------------------------------
-	# simple implementation of Wagner-Fischers Algorithm
-	# adapted from http://en.wikipedia.org/wiki/Wagner%E2%80%93Fischer_edit_distance#Calculating_distance
+	# simple implementation of Wagner-Fischer Algorithm
+	# adopted from http://en.wikipedia.org/wiki/Wagner%E2%80%93Fischer_edit_distance#Calculating_distance
   def self.wagner_fischer(_a, _b)
     time = Time.now
     n = _a.length
@@ -107,7 +107,7 @@ module Levenshtein
   end
 
   #---------------------------------------------------------------------------------------------------------------------
-	# advanced implementation of Wagner-Fischers Algorithm for Levenshtein distance,
+	# advanced implementation of Wagner-Fischer algorithm for Levenshtein distance,
 	# reduced use of memory: O(mn) → O(m)
 	#	by just saving the current and the last column instead of the whole matrix
 	#	has a little overhead, but is faster than wagner_fischer for longer text
