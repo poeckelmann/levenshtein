@@ -8,7 +8,7 @@ All algorithms take two parameters:
 
 The algorithms meassure, how many and which operations are necessary to transform *_a* into *_b*.
 
-All algorithms return a hash with:
+All algorithms return a [https://ruby-doc.org/core-1.8.7/Hash.html](hash) with:
 * :dist     Levenshtein distance
 * :script   array of operations used to transform *_a* to *_b*
 * :time     running time in seconds
