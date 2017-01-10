@@ -5,6 +5,7 @@ A collection of algorithms in Ruby for calculating the Levenshtein distance and 
 All algorithms take two parameters:
 * string *_a*: first text
 * string *_b*: second text
+
 The algorithms meassure, how many and which operations are necessary to transform *_a* into *_b*.
 
 All algorithms return a hash with:
