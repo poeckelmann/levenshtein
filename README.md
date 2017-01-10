@@ -15,6 +15,7 @@ All algorithms return a hash with:
 
 ### Recursive
 The simple recursive algorithm, which is really slow with strings with more than 8 characters.
+The implementation follows Wikibooks: http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Ruby
 ```ruby
 Levenshtein.recursive(_a, _b)
 ```
