@@ -48,7 +48,7 @@ Levenshtein.allison(_a, _b)
 Calculates the Damerau–Levenshtein distance, see http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
 i.e. the Levenshtein distance with the additional operation: transposition of two adjacent characters.
 * the algorithm extends the advanced implementation of Wagner-Fischers algorithm
-* the costs can be customized by parameter _costs, e.g. {:copy => 0, :add => 2, :del => 2, :sub => 2, :trans => 0}
+* the costs can be customized by parameter *_costs*, e.g. {:copy => 0, :add => 2, :del => 2, :sub => 2, :trans => 0}
 ```ruby
 Levenshtein.damerau(_a, _b, _costs = nil)
 ```
