@@ -71,11 +71,11 @@ module Levenshtein
     # initialize first row and column (comparision with an empty string)
     1.upto(n) do |i|
       array[i][0] = i
-      script[i][0] = script[i-1][0].clone << ['DEL', i-1, _a[i-1], 0, _b[0]]
+      script[i][0] = script[i-1][0].clone << [:del, i-1, _a[i-1], 0, _b[0]]
     end
     1.upto(m) do |j|
       array[0][j] = j
-      script[0][j] = script[0][j-1].clone << ['ADD', 0, _a[0], j-1, _b[j-1]]
+      script[0][j] = script[0][j-1].clone << [:add, 0, _a[0], j-1, _b[j-1]]
     end
 
     # main loop where the distance-matrix and the edit-script is build
@@ -83,20 +83,20 @@ module Levenshtein
       1.upto(n) do |i|
         if _a[i-1] == _b[j-1] # copy
           array[i][j] = array[i-1][j-1]
-          script[i][j] = script[i-1][j-1].clone << ['COPY', i-1, _a[i-1], j-1, _b[j-1]]
+          script[i][j] = script[i-1][j-1].clone << [:copy, i-1, _a[i-1], j-1, _b[j-1]]
         else
           # possible operations with their costs
           cases = [array[i-1][j] + 1, array[i][j-1] + 1, array[i-1][j-1] + 1]
           case cases.min
             when cases[0] then		# delete
               array[i][j] = cases[0]
-              script[i][j] = script[i-1][j].clone <<  ['DEL', i-1, _a[i-1], j-1, _b[j-1]]
+              script[i][j] = script[i-1][j].clone <<  [:del, i-1, _a[i-1], j-1, _b[j-1]]
             when cases[1] then		# insert
               array[i][j] = cases[1]
-              script[i][j] = script[i][j-1].clone <<  ['ADD', i-1, _a[i-1], j-1, _b[j-1]]
+              script[i][j] = script[i][j-1].clone <<  [:add, i-1, _a[i-1], j-1, _b[j-1]]
             when cases[2] then		# substitute
               array[i][j] = cases[2]
-              script[i][j] = script[i-1][j-1].clone <<  ['SUB', i-1, _a[i-1], j-1, _b[j-1]]
+              script[i][j] = script[i-1][j-1].clone <<  [:sub, i-1, _a[i-1], j-1, _b[j-1]]
           end
         end
       end
@@ -121,7 +121,7 @@ module Levenshtein
 		# initialize first column (comparision with an empty string)
     1.upto(n) do |i|
       array[i][1] = i
-      script[i][1] = script[i-1][1].clone << ['DEL', i-1, _a[i-1], 0, _b[0]]
+      script[i][1] = script[i-1][1].clone << [:del, i-1, _a[i-1], 0, _b[0]]
     end
 
 		# main loop where the distance-matrix with the editScript is build completely
@@ -133,25 +133,25 @@ module Levenshtein
 			end
 			# generate first row (comparision with an empty string)
 			array[0][1] = j
-      script[0][1] = script[0][0].clone << ['ADD', 0, _a[0], j-1, _b[j-1]]
+      script[0][1] = script[0][0].clone << [:add, 0, _a[0], j-1, _b[j-1]]
 
       1.upto(n) do |i|
 				if _a[i-1] == _b[j-1]
 					array[i][1] = array[i-1][0]	# copy
-          script[i][1] = script[i-1][0].clone << ['COPY', i-1, _a[i-1], j-1, _b[j-1]]
+          script[i][1] = script[i-1][0].clone << [:copy, i-1, _a[i-1], j-1, _b[j-1]]
 				else
 					# posible operations with their costs
 					cases = [array[i-1][1] + 1, array[i][0] + 1, array[i-1][0] + 1]
 					case cases.min
 						when cases[0]	then # delete
 								array[i][1] = cases[0]
-                script[i][1] = script[i-1][1].clone <<  ['DEL', i-1, _a[i-1], j-1, _b[j-1]]
+                script[i][1] = script[i-1][1].clone <<  [:del, i-1, _a[i-1], j-1, _b[j-1]]
 						when cases[1]	then		# insert
 								array[i][1] = cases[1]
-                script[i][1] = script[i][0].clone <<  ['ADD', i-1, _a[i-1], j-1, _b[j-1]]
+                script[i][1] = script[i][0].clone <<  [:add, i-1, _a[i-1], j-1, _b[j-1]]
 						when cases[2] then		# substitute
 								array[i][1] = cases[2]
-                script[i][1] = script[i-1][0].clone <<  ['SUB', i-1, _a[i-1], j-1, _b[j-1]]
+                script[i][1] = script[i-1][0].clone <<  [:sub, i-1, _a[i-1], j-1, _b[j-1]]
 					end
 				end
 			end
@@ -203,7 +203,7 @@ module Levenshtein
 			case op[0]
 				when :start then	# Start
 				when :add then	# Insert
-						alignment << ['ADD', op[1], op[2], op[3], op[4]]
+						alignment << [:add, op[1], op[2], op[3], op[4]]
 						if diag.offset == 0
 							diag = diag.prev
 							i -= 1
@@ -214,7 +214,7 @@ module Levenshtein
 							i -= 1
 						end
 				when :del then	# Delete
-						alignment << ['DEL', op[1], op[2], op[3], op[4]]
+						alignment << [:del, op[1], op[2], op[3], op[4]]
 						if diag.offset == 0
 							diag = diag.next
 							i -= 1
@@ -225,10 +225,10 @@ module Levenshtein
 							diag = diag.prev
 						end
 				when :copy then	# Match
-						alignment << ['COPY', op[1], op[2], op[3], op[4]]
+						alignment << [:copy, op[1], op[2], op[3], op[4]]
 						i -= 1
 				when :sub then	# Change
-						alignment << ['SUB', op[1], op[2], op[3], op[4]]
+						alignment << [:sub, op[1], op[2], op[3], op[4]]
 						i -= 1
 				else
 					Rails.logger.error "Lvensthein: unknown operation: #{op[0]}"
@@ -457,7 +457,7 @@ module Levenshtein
 			# initialize first column (comparision with an empty string)
       1.upto(@n) do |i|
         @array[i][2] = i * @costs[:del]
-        @script[i][2] = @script[i-1][2].clone << ['DEL', i-1, @a[i-1], 0, @b[0]]
+        @script[i][2] = @script[i-1][2].clone << [:del, i-1, @a[i-1], 0, @b[0]]
       end
 
 			# main loop where the distance-matrix with the editScript is build completely
@@ -469,7 +469,7 @@ module Levenshtein
 					if @a[i-1] == @b[j-1]
 						if @array[i-1][1] + @costs[:copy] < @array[i][2]
 							@array[i][2] = @array[i-1][1] + @costs[:copy]
-              @script[i][2] = @script[i-1][1].clone << ['COPY', i-1, @a[i-1], j-1, @b[j-1]]
+              @script[i][2] = @script[i-1][1].clone << [:copy, i-1, @a[i-1], j-1, @b[j-1]]
 						end
 					end
 					i += 1
@@ -483,14 +483,14 @@ module Levenshtein
 					if @a[i-1] == @b[j-1]
 						if @array[i-1][1] + @costs[:copy] < @array[i][2]
 							@array[i][2] = @array[i-1][1] + @costs[:copy]
-              @script[i][2] = @script[i-1][1].clone << ['COPY', i-1, @a[i-1], j-1, @b[j-1]]
+              @script[i][2] = @script[i-1][1].clone << [:copy, i-1, @a[i-1], j-1, @b[j-1]]
 						end
 					end
 					if @a[i-1] == @b[j-2] && @a[i-2] == @b[j-1]
 						if @array[i-2][0] + @costs[:trans] < @array[i][2]
 							#puts("\t\t yeah")
 							@array[i][2] = @array[i-2][0] + @costs[:trans]
-              @script[i][2] = @script[i-2][0].clone << ['TRANS', i-2, "(#{@a[i-2]}#{@a[i-1]})", j-2, "(#{@b[j-2]}#{@b[j-1]})"]
+              @script[i][2] = @script[i-2][0].clone << [:trans, i-2, "(#{@a[i-2]}#{@a[i-1]})", j-2, "(#{@b[j-2]}#{@b[j-1]})"]
 						end
 					end
 					i += 1
@@ -514,7 +514,7 @@ module Levenshtein
 			end
 			# generate first row (comparision with an empty string)
 			@array[0][2] = j * @costs[:add]
-      @script[0][2] = @script[0][1].clone << ['ADD', 0, @a[0], j-1, @b[j-1]]
+      @script[0][2] = @script[0][1].clone << [:add, 0, @a[0], j-1, @b[j-1]]
 		end
 
 		def add_del_sub(i, j)
@@ -523,13 +523,13 @@ module Levenshtein
 			case cases.min
 				when cases[0]	then	# delete
 						@array[i][2] = cases[0]
-            @script[i][2] = @script[i-1][2].clone << ['DEL', i-1, @a[i-1], j-1, @b[j-1]]
+            @script[i][2] = @script[i-1][2].clone << [:del, i-1, @a[i-1], j-1, @b[j-1]]
 				when cases[1] then		# insert
 						@array[i][2] = cases[1]
-            @script[i][2] = @script[i][1].clone << ['ADD', i-1, @a[i-1], j-1, @b[j-1]]
+            @script[i][2] = @script[i][1].clone << [:add, i-1, @a[i-1], j-1, @b[j-1]]
 				when cases[2] then		# substitute
 						@array[i][2] = cases[2]
-            @script[i][2] = @script[i-1][1].clone << ['SUB', i-1, @a[i-1], j-1, @b[j-1]]
+            @script[i][2] = @script[i-1][1].clone << [:sub, i-1, @a[i-1], j-1, @b[j-1]]
 			end
 		end
   end
