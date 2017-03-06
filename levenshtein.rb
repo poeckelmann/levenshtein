@@ -176,18 +176,10 @@ module Levenshtein
 
 		if lba >= 0
 			diag = main_diag
-			i = 0
-			lba.times do
-				diag = diag.get_above
-				i += 1
-			end
+			lba.times {diag = diag.get_above}
 		else
 	 		diag = main_diag.get_below
-      i = 0
-			(~lba).times do
-				diag = diag.get_above
-				i += 1
-			end
+			(~lba).times {diag = diag.get_above}
 		end
 
 		dist = diag.get([_a.length, _b.length].min)
@@ -230,9 +222,6 @@ module Levenshtein
 				when :sub then	# Change
 						alignment << [:sub, op[1], op[2], op[3], op[4]]
 						i -= 1
-				else
-					Rails.logger.error "Lvensthein: unknown operation: #{op[0]}"
-					i -= 1
 			end
 			op = diag.get_op(i)
 		end
@@ -253,10 +242,6 @@ module Levenshtein
 		@elements			# list of elements
 	
 		def initialize(_a, _b, _prev, _o)
-			# assert Math.abs(o) <= _b.length;
-			#if !(_o.abs <= _b.length)
-			#	puts("Warning: Initialize.assert")
-			#end
 			@offset = _o		
 			@a = _a
 			@b = _b
@@ -267,11 +252,7 @@ module Levenshtein
 
 		# returns below diagonal, creating it if necessary
 		def get_below
-			if(@prev == nil)
-				# assert offset == 0;
-				#if !(@offset == 0)
-				#	puts("Warning: getBelow.assert")
-				#end
+			if @prev == nil
 				# lower half has a, b switched, so see themselves
 				# as the upper half of the transpose
 				@prev = Diagonal.new(@b, @a, self, -1)
@@ -281,9 +262,9 @@ module Levenshtein
 
 		# returns above diagonal, creating it if necessary
 		def get_above
-			if(@next == nil)
-				o = @offset + 1;
-				if(@offset < 0)
+			if @next == nil
+				o = @offset + 1
+				if @offset < 0
 					o = @offset - 1
 				end
 				@next = Diagonal.new(@a, @b, self, o)
@@ -293,10 +274,6 @@ module Levenshtein
 
 		# get entry to the left
 		def get_w(_i)
-			# assert i >= 0 && (offset != 0 || i > 0);
-			#if !(i >= 0 && (@offset != 0 || i > 0))
-			#	puts("Warning: getW.assert")
-			#end
 			# if this is main diagonal, then left diagonal is 1 shorter
 			o = _i-1
 			if @offset != 0
@@ -307,20 +284,12 @@ module Levenshtein
 
 		# get entry above
 		def get_n(_i)
-			# assert i > 0;
-			#if !(i > 0)
-			#	puts("Warning: getN.assert")
-			#end
 			# above diagonal is 1 shorter
-		    	return get_above.get(_i-1)
+			return get_above.get(_i-1)
 		end
 	
 		# compute element j of this diagonal
 		def get(_j)
-			# assert j >= 0 && j <= b.length-Math.abs(offset) && j <= a.length;
-			#if !(j >= 0 && j <= @b.length-@offset.abs && j <= @a.length)
-			#	puts("Warning: get.assert")
-			#end
 			if _j < @elements.length
 				return @elements[_j]
 			end
@@ -330,7 +299,6 @@ module Levenshtein
 			while @elements.length <= _j
 				nw = me
 				i = @elements.length
-
 				# \   \   \
 				#  \   \   \
 				#   \  nw   n
@@ -371,7 +339,6 @@ module Levenshtein
 				if @offset == 0
 					return [:start, pos_a, @a[pos_a], pos_b, @b[pos_b]]		# Operation: Start
 				elsif offset > 0
-					#return [:add, pos_a, @a[pos_a], pos_b, @b[pos_b]]		
 					return [:add, 0, @a[0], pos_b, @b[pos_b]]			# Operation: Insert
 				else
 					return [:del,  pos_b, @b[pos_b], pos_a+1, @a[pos_a+1]]	# Operation: Delete (REVERSE)
@@ -391,7 +358,6 @@ module Levenshtein
 					if @offset >= 0
 						return [:add,  pos_a, @a[pos_a], pos_b, @b[pos_b]]	# Operation: Insert
 					else
-						#return [:del, i, @offset.abs + i]
 						return [:del,  pos_b, @b[pos_b], pos_a, @a[pos_a]]	# Operation: Delete (REVERSE)
 					end
 				elsif me == 1 + nw
